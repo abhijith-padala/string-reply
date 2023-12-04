@@ -39,9 +39,9 @@ The service incorporates logging using SLF4J. Important events, errors, or infor
 The project includes a comprehensive testing suite covering both unit tests and integration tests.
 
 
-### Unit Tests
+### Unit Tests and Integration Tests
 
-Unit tests ensure the correctness of individual components. Run unit tests and integration tests both using the following command:
+Unit tests ensure the correctness of individual components. Integration tests verify the application's behavior as a whole. Run unit tests and integration tests both using the following command:
 
 ```bash
 ./gradlew test
