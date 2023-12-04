@@ -1,104 +1,51 @@
-# Your Task
-Our company has released a beta version of **String Reply Service** and it has been a huge success.
-In the current implementation (as part of boilerplate code), the **String Reply Service** takes in an input string (in the format of `[a-z0-9]*`)
-and returns the input in a JSON object.
+# String Reply Service
 
-For example,
+## Overview
 
-```
-GET /reply/kbzw9ru
-{
-    "data": "kbzw9ru"
-}
-```
+The String Reply Service is a Java Spring Boot application that processes input strings based on rules and returns the result in a JSON object. The service includes features such as rule-based string manipulation, error handling, logging, and comprehensive testing.
 
-As the service is widely adopted, there have been increasing feature requests.
-Our project manager has come back with the following requirements for V2 of the service:
+## Features
 
-The input string will now be comprised of two components, a rule and a string, separated by a dash (-).
-Rules **always** contain two numbers. Each number represents a string operation.
+### V2 Endpoint
 
-The supported numbers are:
+A new version of the service (V2) has been introduced with additional features. The V2 endpoint allows users to apply rules to input strings. The supported rules are:
 
-- `1`: reverse the string
+- **Rule 1:** Reverse the string.
+- **Rule 2:** Encode the string using the MD5 hash algorithm and display as hex.
 
-   E.g. `kbzw9ru` becomes `ur9wzbk`
+The numbers in the rule are applied in sequence, and the output of one rule serves as the input for the next rule. Rules can be repeated, providing flexibility in string manipulation.
 
-- `2`: encode the string via MD5 hash algorithm and display as hex
+#### Examples:
 
-   E.g. `kbzw9ru` becomes `0fafeaae780954464c1b29f765861fad`
+- `GET /v2/reply/11-kbzw9ru` returns `{"statusCode": 200,"message": "kbzw9ru"}` (reversing the string twice has no effect).
+- `GET /v2/reply/12-kbzw9ru` returns `{"statusCode": 200, "message": "5a8973b3b1fafaeaadf10e195c6e1dd4"}` (reversing and then MD5 encoding).
+- `GET /v2/reply/22-kbzw9ru` returns `{"statusCode": 200, "message": "e8501e64cf0a9fa45e3c25aa9e77ffd5"}` (MD5 encoding twice).
+- `GET /v2/reply/33-kbzw9ru` returns `{"statusCode": 400,"message": "Invalid input"}` (rule Code is invalid).
+  
+### Error Handling
 
-The numbers are applied in sequence, i.e. the output of the first rule will
-serve as the input of the second rule. The numbers can also be repeated,
-i.e. a rule of 11 would mean reversing the string twice, resulting in no change to the string.
+The service includes improved error handling:
 
-Giving a few examples,
+- Invalid input to the V2 endpoint results in a `400 Bad Request` status code with an informative error message in the response body.
+- Custom `InvalidInputException` is thrown for invalid input scenarios, providing a clear and consistent way to handle these exceptions.
 
-```
-GET /v2/reply/11-kbzw9ru
-{
-    "data": "kbzw9ru"
-}
-```
-```
-GET /v2/reply/12-kbzw9ru
-{
-    "data": "5a8973b3b1fafaeaadf10e195c6e1dd4"
-}
-```
-```
-GET /v2/reply/22-kbzw9ru
-{
-    "data": "e8501e64cf0a9fa45e3c25aa9e77ffd5"
-}
-```
+### Logging
 
-## What you need to do
-Use the boilerplate given and implement the above requirement.
-Your implementation should also consider:
+The service incorporates logging using SLF4J. Important events, errors, or information during the execution of the application are logged, making it easier to troubleshoot and monitor the service.
 
-- Maintain the existing endpoint for backward compatibility.
-- Implement V2 endpoint for the above new requirements.
-- Additional rules are expected in future releases. The updates in rule set
-should have minimal code changes and impact to existing functionality.
-- Testability for individual rule and the application.
-Unit tests are highly recommended.
-- Endpoints should return correct status code and response message.
-For invalid request, it should return status code `400`
-with message `"Invalid input"`, for example:
-   ```
-   GET /v2/reply/13-kbzw9ru
-   {
-       "message": "Invalid input"
-   }
-   ```
 
-Upon completing the task, please feel free to (though not required):
+## Testing
 
-- host your code on Github
-- include any readme to explain your setup/environment
-- add/implement anything you think would be beneficial
+The project includes a comprehensive testing suite covering both unit tests and integration tests.
 
-## Build project
 
-To build the project, simply run
-```
-./gradlew build
-```
+### Unit Tests
 
-## Start project
+Unit tests ensure the correctness of individual components. Run unit tests and integration tests both using the following command:
 
-To start the project, simply run
-```
-./gradlew bootRun
-```
+```bash
+./gradlew test
 
-Once the service started, the endpoint will be available at `localhost:8080`, so you can make request to the service endpoint
 
-```json
-GET localhost:8080/reply/helloworld
 
-{
-    message: "helloword"
-}
-```
+
